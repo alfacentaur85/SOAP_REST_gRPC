@@ -5,14 +5,8 @@ namespace ClinicService.Services.Impl
     public class PetRepository : IPetRepository
     {
 
-        #region Serives
-
         private readonly ClinicServiceDbContext _dbContext;
         private readonly ILogger<PetRepository> _logger;
-
-        #endregion
-
-        #region Constructors
 
         public PetRepository(ClinicServiceDbContext dbContext,
             ILogger<PetRepository> logger)
@@ -20,8 +14,6 @@ namespace ClinicService.Services.Impl
             _logger = logger;
             _dbContext = dbContext;
         }
-
-        #endregion
 
         public int Add(Pet item)
         {

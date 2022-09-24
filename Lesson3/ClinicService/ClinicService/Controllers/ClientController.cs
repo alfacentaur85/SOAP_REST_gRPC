@@ -10,11 +10,8 @@ namespace ClinicService.Controllers
     public class ClientController : ControllerBase
     {
 
-        
-
         private readonly IClientRepository _clientRepository;
         private readonly ILogger<ClientController> _logger;
-
 
         public ClientController(IClientRepository clientRepository,
             ILogger<ClientController> logger)

@@ -53,7 +53,7 @@ namespace ClinicService
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
             builder.Services.AddControllers();
-
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -69,7 +69,7 @@ namespace ClinicService
             app.UseAuthorization();
 
             //app.UseHttpLogging();
-            app.UseWhen( 
+            app.UseWhen( // Пообещали починить в 7 .net !
                 ctx => ctx.Request.ContentType != "application/grpc",
                 builder =>
                 {

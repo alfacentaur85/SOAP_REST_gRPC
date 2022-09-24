@@ -5,14 +5,8 @@ namespace ClinicService.Services.Impl
     public class ConsultationRepository : IConsultationRepository
     {
 
-        #region Serives
-
         private readonly ClinicServiceDbContext _dbContext;
         private readonly ILogger<ConsultationRepository> _logger;
-
-        #endregion
-
-        #region Constructors
 
         public ConsultationRepository(ClinicServiceDbContext dbContext,
             ILogger<ConsultationRepository> logger)
@@ -20,8 +14,6 @@ namespace ClinicService.Services.Impl
             _logger = logger;
             _dbContext = dbContext;
         }
-
-        #endregion
 
         public int Add(Consultation item)
         {
