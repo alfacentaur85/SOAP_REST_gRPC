@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Protos\auth.proto" />
     <None Remove="Protos\clinic.proto" />
   </ItemGroup>
 
@@ -24,11 +25,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.4" />
+    <PackageReference Include="protobuf-net" Version="3.1.22" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
@@ -37,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\auth.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\clinic.proto" GrpcServices="Server" />
   </ItemGroup>
 

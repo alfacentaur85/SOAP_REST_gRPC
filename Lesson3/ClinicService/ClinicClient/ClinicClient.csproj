@@ -8,11 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Protos\" />
+    <None Remove="Protos\auth.proto" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="..\ClinicService\Protos\clinic.proto" Link="Protos\clinic.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\auth.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>

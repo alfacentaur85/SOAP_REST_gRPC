@@ -2,6 +2,7 @@
 using ClinicService.Models;
 using ClinicService.Models.Requests;
 using ClinicService.Utils;
+using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,14 +26,44 @@ namespace ClinicService.Services.Impl
 
         public SessionContext GetSessionInfo(string sessionToken)
         {
-            throw new NotImplementedException();
+            SessionContext sessionContext;
+
+            lock (_sessions)
+            {
+                _sessions.TryGetValue(sessionToken, out sessionContext);
+            }
+
+            if (sessionContext == null)
+            {
+                using IServiceScope scope = _serviceScopeFactory.CreateScope();
+                ClinicServiceDbContext context = scope.ServiceProvider.GetRequiredService<ClinicServiceDbContext>();
+
+                AccountSession session = context
+                     .AccountSessions
+                     .FirstOrDefault(item => item.SessionToken == sessionToken);
+
+                if (session == null)
+                    return null;
+
+                Account account = context.Accounts.FirstOrDefault(item => item.AccountId == session.AccountId);
+
+                sessionContext = GetSessionContext(account, session);
+
+                lock (_sessions)
+                {
+                    _sessions[sessionContext.SessionToken] = sessionContext;
+                }
+
+            }
+
+            return sessionContext;
+
         }
 
         public AuthenticationResponse Login(AuthenticationRequest authenticationRequest)
         {
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<ClinicServiceDbContext>();
+            ClinicServiceDbContext context = scope.ServiceProvider.GetRequiredService<ClinicServiceDbContext>();
 
             Account account =
                 !string.IsNullOrWhiteSpace(authenticationRequest.Login) ?
@@ -46,6 +77,7 @@ namespace ClinicService.Services.Impl
                 };
 
             }
+
 
             if (!PasswordUtils.VerifyPassword(authenticationRequest.Password, account.PasswordSalt, account.PasswordHash))
             {
@@ -80,6 +112,7 @@ namespace ClinicService.Services.Impl
                 Status = AuthenticationStatus.Success,
                 SessionContext = sessionContext
             };
+
         }
 
 
@@ -103,11 +136,11 @@ namespace ClinicService.Services.Impl
 
         private string CreateSessionToken(Account account)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(SecretKey);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(
                     new Claim[]{
@@ -117,9 +150,7 @@ namespace ClinicService.Services.Impl
                 Expires = DateTime.UtcNow.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
